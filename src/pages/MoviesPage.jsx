@@ -9,7 +9,7 @@ const MoviesPage = () => {
   const [error, setError] = useState('');
 
   const handleSearch = async (event) => {
-    event.preventDefault(); 
+    event.preventDefault();
 
     if (searchQuery.trim() === '') {
       setMovies([]);
@@ -22,7 +22,7 @@ const MoviesPage = () => {
     try {
       const response = await axios.get(`https://api.themoviedb.org/3/search/movie`, {
         headers: {
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ', // Замініть на ваш API-ключ
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
         },
         params: {
           query: searchQuery,
@@ -63,9 +63,7 @@ const MoviesPage = () => {
       <ul>
         {movies.map((movie) => (
           <li key={movie.id}>
-            <Link to={`/movies/${movie.id}`}>
-              {movie.title}
-            </Link>
+            <Link to={`/movies/${movie.id}`}>{movie.title}</Link>
           </li>
         ))}
       </ul>
