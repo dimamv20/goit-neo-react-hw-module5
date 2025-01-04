@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Routes, Route } from 'react-router-dom'; // Правильний імпорт
+import { NavLink, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import MoviesPage from './pages/MoviesPage';
 import NotFoundPage from './pages/NotFoundPage';
