@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-const MovieCast = ({ movieId }) => {
+const MovieCast = () => {
+  const { movieId } = useParams(); // Отримуємо movieId з маршруту
   const [cast, setCast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -9,7 +11,7 @@ const MovieCast = ({ movieId }) => {
     const fetchCast = async () => {
       try {
         const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`, 
+          `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`,
           {
             method: 'GET',
             headers: {

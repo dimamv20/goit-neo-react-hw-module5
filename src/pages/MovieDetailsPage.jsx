@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import MovieCast from '../components/MovieCast';
+import MovieReviews from '../components/MovieReviews';
 
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
@@ -8,12 +9,13 @@ const MovieDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCast, setShowCast] = useState(false);
+  const [showReviews, setShowReviews] = useState(false);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
         const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`, 
+          `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`,
           {
             method: 'GET',
             headers: {
@@ -53,14 +55,21 @@ const MovieDetailsPage = () => {
         style={{ width: '300px', height: 'auto' }}
       />
       <p>{movie.overview}</p>
-      <p><strong>User Score:</strong> {movie.vote_average}</p>
-      <p><strong>Genres:</strong> {movie.genres.map(genre => genre.name).join(', ')}</p>
-      <div>
-        <button onClick={() => setShowCast(!showCast)}>
-          {showCast ? 'Hide Cast' : 'Show Cast'}
-        </button>
-      </div>
+      <p>
+        <strong>User Score:</strong> {movie.vote_average}
+      </p>
+      <p>
+        <strong>Genres:</strong> {movie.genres.map((genre) => genre.name).join(', ')}
+      </p>
+      <button onClick={() => setShowCast((prev) => !prev)}>
+        {showCast ? 'Hide Cast' : 'Show Cast'}
+      </button>
+      <button onClick={() => setShowReviews((prev) => !prev)}>
+        {showReviews ? 'Hide Reviews' : 'Show Reviews'}
+      </button>
+
       {showCast && <MovieCast movieId={movieId} />}
+      {showReviews && <MovieReviews movieId={movieId} />}
     </div>
   );
 };

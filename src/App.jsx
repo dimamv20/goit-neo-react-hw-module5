@@ -4,23 +4,23 @@ import HomePage from './pages/HomePage';
 import MoviesPage from './pages/MoviesPage';
 import NotFoundPage from './pages/NotFoundPage';
 import MovieDetailsPage from './pages/MovieDetailsPage';
+import MovieCast from './components/MovieCast';
 
 const App = () => {
   return (
     <div>
       <nav className="navigation">
-        <NavLink to="/" >
-          Home
-        </NavLink>
-        <NavLink to="/movies">
-          Movies
-        </NavLink>
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/movies">Movies</NavLink>
       </nav>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/movies/: movieId" element ={<MovieDetailsPage/>}></Route>
         <Route path="/movies" element={<MoviesPage />} />
-        <Route path="/movies/:movieId" element={<MovieDetailsPage />} />
+        <Route path="/movies/:movieId" element={<MovieDetailsPage />}>
+          <Route path="cast" element={<MovieCast />} />
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
