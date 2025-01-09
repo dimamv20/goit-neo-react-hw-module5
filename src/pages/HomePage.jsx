@@ -1,41 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import MovieList from '../components/MovieList'; 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import MovieList from '../components/MovieList';
 
 const HomePage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const apiUrl = `${import.meta.env.VITE_API_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchMovies = async () => {
+      setLoading(true);
+      setError('');
+
       try {
-        const response = await fetch(apiUrl, {
-          method: 'GET',
+        const response = await axios.get('https://api.themoviedb.org/3/discover/movie', {
           headers: {
             accept: 'application/json',
-            Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
+          },
+          params: {
+            include_adult: false,
+            include_video: false,
+            language: 'en-US',
+            page: 1,
+            sort_by: 'popularity.desc',
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-
-        const data = await response.json();
-        setMovies(data.results.slice(0, 10));
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching movies:', error);
+        setMovies(response.data.results.slice(0, 20));
+      } catch (err) {
+        setError('Failed to fetch movies');
+        console.error(err);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchMovies();
-  }, [apiUrl]);
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
   }
 
   return (
