@@ -59,7 +59,7 @@ const MovieDetailsPage = () => {
 
   return (
     <div>
-      <button onClick={handleGoBack}>Go Back</button>
+
       <h1>{movie.title}</h1>
       <img
         src={posterUrl}
