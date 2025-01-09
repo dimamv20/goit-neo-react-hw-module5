@@ -12,8 +12,7 @@ const MovieDetailsPage = () => {
   const [error, setError] = useState('');
   const [showCast, setShowCast] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
-  const previousLocationRef = useRef(location.state?.from || '/'); // Зберігаємо попередній маршрут
-
+  const previousLocationRef = useRef(location.state?.from || '/');
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
@@ -42,7 +41,7 @@ const MovieDetailsPage = () => {
   }, [movieId]);
 
   const handleGoBack = () => {
-    navigate(previousLocationRef.current); // Повернення на попередню сторінку
+    navigate(previousLocationRef.current); 
   };
 
   if (loading) {
