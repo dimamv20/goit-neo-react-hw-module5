@@ -27,7 +27,9 @@ const MoviesPage = () => {
       try {
         const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
           headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
+            accept: 'application/json',
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
           },
           params: {
             query: searchQuery,
