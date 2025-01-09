@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, NavLink } from 'react-router-dom';
+import { useParams, useLocation, NavLink, useNavigate } from 'react-router-dom';
 import MovieCast from '../components/MovieCast';
 import MovieReviews from '../components/MovieReviews';
 
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCast, setShowCast] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
-  const historyRef = useRef(null);
+  const previousLocationRef = useRef(location.state?.from || '/'); // Зберігаємо попередній маршрут
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -40,9 +42,7 @@ const MovieDetailsPage = () => {
   }, [movieId]);
 
   const handleGoBack = () => {
-    if (historyRef.current) {
-      historyRef.current.goBack();
-    }
+    navigate(previousLocationRef.current); // Повернення на попередню сторінку
   };
 
   if (loading) {
@@ -59,6 +59,9 @@ const MovieDetailsPage = () => {
 
   return (
     <div>
+      <button onClick={handleGoBack} style={{ marginBottom: '20px' }}>
+        Go Back
+      </button>
 
       <h1>{movie.title}</h1>
       <img
@@ -74,12 +77,18 @@ const MovieDetailsPage = () => {
         <strong>Genres:</strong> {movie.genres.map((genre) => genre.name).join(', ')}
       </p>
 
-      <NavLink to={`/movies/${movieId}/cast`} onClick={() => setShowCast(!showCast)}>
-        {showCast ? 'Hide Cast' : 'Show Cast'}
-      </NavLink>
-      <NavLink to={`/movies/${movieId}/reviews`} onClick={() => setShowReviews(!showReviews)}>
-        {showReviews ? 'Hide Reviews' : 'Show Reviews'}
-      </NavLink>
+      <nav>
+        <NavLink
+          to={`/movies/${movieId}/cast`}
+          onClick={() => setShowCast(!showCast)}
+          style={{ marginRight: '10px' }}
+        >
+          {showCast ? 'Hide Cast' : 'Show Cast'}
+        </NavLink>
+        <NavLink to={`/movies/${movieId}/reviews`} onClick={() => setShowReviews(!showReviews)}>
+          {showReviews ? 'Hide Reviews' : 'Show Reviews'}
+        </NavLink>
+      </nav>
 
       {showCast && <MovieCast movieId={movieId} />}
       {showReviews && <MovieReviews movieId={movieId} />}
