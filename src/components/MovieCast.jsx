@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const MovieCast = () => {
-  const { movieId } = useParams(); // Отримуємо movieId з маршруту
+  const { movieId } = useParams();
   const [cast, setCast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
