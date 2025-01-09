@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react';
+import MovieList from '../components/MovieList'; 
 
 const HomePage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const url =
-    'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc';
-  const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization:
-        'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
-    },
-  };
+  const apiUrl = `${import.meta.env.VITE_API_URL}/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc`;
 
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await fetch(url, options);
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
         const data = await response.json();
         setMovies(data.results.slice(0, 10));
         setLoading(false);
@@ -29,7 +32,7 @@ const HomePage = () => {
     };
 
     fetchMovies();
-  }, []);
+  }, [apiUrl]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -38,13 +41,7 @@ const HomePage = () => {
   return (
     <div>
       <h1>Popular Movies</h1>
-      <ul id="movies-list">
-        {movies.map(movie => (
-          <li key={movie.id} className="movie-item">
-            {movie.title}
-          </li>
-        ))}
-      </ul>
+      <MovieList movies={movies} />
     </div>
   );
 };

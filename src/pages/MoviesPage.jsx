@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const MoviesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
+  useEffect(() => {
+    const queryFromParams = searchParams.get('query') || '';
+    setSearchQuery(queryFromParams);
+  }, [searchParams]);
 
+  useEffect(() => {
     if (searchQuery.trim() === '') {
       setMovies([]);
       return;
@@ -19,29 +23,42 @@ const MoviesPage = () => {
     setLoading(true);
     setError('');
 
-    try {
-      const response = await axios.get(`https://api.themoviedb.org/3/search/movie`, {
-        headers: {
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
-        },
-        params: {
-          query: searchQuery,
-          page: 1,
-          include_adult: false,
-        },
-      });
+    const fetchMovies = async () => {
+      try {
+        const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
+          },
+          params: {
+            query: searchQuery,
+            page: 1,
+            include_adult: false,
+          },
+        });
 
-      if (response.data.results.length === 0) {
-        setError('No movies found');
-      } else {
-        setMovies(response.data.results);
+        if (response.data.results.length === 0) {
+          setError('No movies found');
+        } else {
+          setMovies(response.data.results);
+        }
+      } catch (err) {
+        setError('Failed to fetch movies');
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError('Failed to fetch movies');
-      console.error(err);
-    } finally {
-      setLoading(false);
+    };
+
+    fetchMovies();
+  }, [searchQuery]);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    if (searchQuery.trim() === '') {
+      setMovies([]);
+      return;
     }
+    setSearchParams({ query: searchQuery });
   };
 
   return (

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { useParams, NavLink } from 'react-router-dom';
 import MovieCast from '../components/MovieCast';
 import MovieReviews from '../components/MovieReviews';
 
@@ -10,6 +10,7 @@ const MovieDetailsPage = () => {
   const [error, setError] = useState('');
   const [showCast, setShowCast] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
+  const historyRef = useRef(null);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
@@ -38,6 +39,12 @@ const MovieDetailsPage = () => {
     fetchMovieDetails();
   }, [movieId]);
 
+  const handleGoBack = () => {
+    if (historyRef.current) {
+      historyRef.current.goBack();
+    }
+  };
+
   if (loading) {
     return <div>Loading movie details...</div>;
   }
@@ -46,11 +53,16 @@ const MovieDetailsPage = () => {
     return <div>{error}</div>;
   }
 
+  const posterUrl = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : 'https://via.placeholder.com/500x750?text=No+Image+Available';
+
   return (
     <div>
+      <button onClick={handleGoBack}>Go Back</button>
       <h1>{movie.title}</h1>
       <img
-        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+        src={posterUrl}
         alt={movie.title}
         style={{ width: '300px', height: 'auto' }}
       />
@@ -61,12 +73,13 @@ const MovieDetailsPage = () => {
       <p>
         <strong>Genres:</strong> {movie.genres.map((genre) => genre.name).join(', ')}
       </p>
-      <button onClick={() => setShowCast((prev) => !prev)}>
+
+      <NavLink to={`/movies/${movieId}/cast`} onClick={() => setShowCast(!showCast)}>
         {showCast ? 'Hide Cast' : 'Show Cast'}
-      </button>
-      <button onClick={() => setShowReviews((prev) => !prev)}>
+      </NavLink>
+      <NavLink to={`/movies/${movieId}/reviews`} onClick={() => setShowReviews(!showReviews)}>
         {showReviews ? 'Hide Reviews' : 'Show Reviews'}
-      </button>
+      </NavLink>
 
       {showCast && <MovieCast movieId={movieId} />}
       {showReviews && <MovieReviews movieId={movieId} />}
