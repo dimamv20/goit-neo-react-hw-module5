@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useLocation, NavLink, useNavigate } from 'react-router-dom';
-import MovieCast from '../components/MovieCast';
-import MovieReviews from '../components/MovieReviews';
+import { useParams, useLocation, NavLink, useNavigate, Outlet } from 'react-router-dom';
 
 const MovieDetailsPage = () => {
   const { movieId } = useParams();
@@ -10,38 +8,42 @@ const MovieDetailsPage = () => {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showCast, setShowCast] = useState(false);
-  const [showReviews, setShowReviews] = useState(false);
   const previousLocationRef = useRef(location.state?.from || '/');
-  useEffect(() => {
-    const fetchMovieDetails = async () => {
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`,
-          {
-            method: 'GET',
-            headers: {
-              accept: 'application/json',
-              Authorization:
-                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
-            },
-          }
-        );
-        const data = await response.json();
-        setMovie(data);
-      } catch (err) {
-        setError('Failed to fetch movie details');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
+  const fetchMovieDetails = async () => {
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`,
+        {
+          method: 'GET',
+          headers: {
+            accept: 'application/json',
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch movie details');
+      }
+
+      const data = await response.json();
+      setMovie(data);
+    } catch (err) {
+      setError('Failed to fetch movie details');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchMovieDetails();
   }, [movieId]);
 
   const handleGoBack = () => {
-    navigate(previousLocationRef.current); 
+    navigate(previousLocationRef.current);
   };
 
   if (loading) {
@@ -77,20 +79,14 @@ const MovieDetailsPage = () => {
       </p>
 
       <nav>
-        <NavLink
-          to={`/movies/${movieId}/cast`}
-          onClick={() => setShowCast(!showCast)}
-          style={{ marginRight: '10px' }}
-        >
-          {showCast ? 'Hide Cast' : 'Show Cast'}
+        <NavLink to="cast" style={{ marginRight: '10px' }}>
+          Cast
         </NavLink>
-        <NavLink to={`/movies/${movieId}/reviews`} onClick={() => setShowReviews(!showReviews)}>
-          {showReviews ? 'Hide Reviews' : 'Show Reviews'}
-        </NavLink>
+        <NavLink to="reviews">Reviews</NavLink>
       </nav>
 
-      {showCast && <MovieCast movieId={movieId} />}
-      {showReviews && <MovieReviews movieId={movieId} />}
+      {/* Відображення вкладених маршрутів */}
+      <Outlet />
     </div>
   );
 };
