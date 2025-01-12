@@ -8,7 +8,8 @@ const MovieDetailsPage = () => {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const previousLocation = location.state?.from || '/movies';
+
+  const previousLocationRef = useRef(location.state?.from || '/movies');
 
   const fetchMovieDetails = async () => {
     try {
@@ -42,7 +43,8 @@ const MovieDetailsPage = () => {
   }, [movieId]);
 
   const handleGoBack = () => {
-    navigate(previousLocation);
+
+    navigate(previousLocationRef.current);
   };
 
   if (loading) {
