@@ -1,50 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useSearchParams } from "react-router-dom";
+import MovieList from "../components/MovieList";
 
 const MoviesPage = () => {
-  const [searchQuery, setSearchQuery] = useState('');
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  useEffect(() => {
-    const queryFromParams = searchParams.get('query') || '';
-    setSearchQuery(queryFromParams);
-  }, [searchParams]);
+  const searchQuery = searchParams.get("query") || "";
 
   useEffect(() => {
-    if (searchQuery.trim() === '') {
+    if (!searchQuery.trim()) {
       setMovies([]);
+      setError("");
       return;
     }
 
-    setLoading(true);
-    setError('');
-
     const fetchMovies = async () => {
+      setLoading(true);
+      setError("");
       try {
-        const response = await axios.get('https://api.themoviedb.org/3/search/movie', {
-          headers: {
-            accept: 'application/json',
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
-          },
-          params: {
-            query: searchQuery,
-            page: 1,
-            include_adult: false,
-          },
-        });
+        const response = await axios.get(
+          "https://api.themoviedb.org/3/search/movie",
+          {
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${process.env.REACT_APP_API_KEY}`,
+            },
+            params: {
+              query: searchQuery,
+              page: 1,
+              include_adult: false,
+            },
+          }
+        );
 
-        if (response.data.results.length === 0) {
-          setError('No movies found');
-        } else {
-          setMovies(response.data.results);
+        const results = response.data.results;
+
+        if (results.length === 0) {
+          setError("No movies found");
         }
+        setMovies(results);
       } catch (err) {
-        setError('Failed to fetch movies');
+        setError("Failed to fetch movies");
         console.error(err);
       } finally {
         setLoading(false);
@@ -56,11 +56,10 @@ const MoviesPage = () => {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    if (searchQuery.trim() === '') {
-      setMovies([]);
-      return;
+    const query = event.target.elements.search.value.trim();
+    if (query) {
+      setSearchParams({ query });
     }
-    setSearchParams({ query: searchQuery });
   };
 
   return (
@@ -69,8 +68,8 @@ const MoviesPage = () => {
       <form onSubmit={handleSearch}>
         <input
           type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          name="search"
+          defaultValue={searchQuery}
           placeholder="Search for a movie"
         />
         <button type="submit">Search</button>
@@ -78,14 +77,9 @@ const MoviesPage = () => {
 
       {loading && <div>Loading...</div>}
       {error && <div>{error}</div>}
+      {!loading && !error && movies.length === 0 && <div>No results found.</div>}
 
-      <ul>
-        {movies.map((movie) => (
-          <li key={movie.id}>
-            <Link to={`/movies/${movie.id}`}>{movie.title}</Link>
-          </li>
-        ))}
-      </ul>
+      <MovieList movies={movies} />
     </div>
   );
 };
