@@ -8,7 +8,7 @@ const MovieDetailsPage = () => {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const previousLocationRef = useRef(location.state?.from || '/');
+  const previousLocation = location.state?.from || '/movies';
 
   const fetchMovieDetails = async () => {
     try {
@@ -18,8 +18,7 @@ const MovieDetailsPage = () => {
           method: 'GET',
           headers: {
             accept: 'application/json',
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMzIwYTMxYzlkNzkyODBiYzgyZGJlNTIyNzUyZjhmNSIsIm5iZiI6MTczNTg3NzE2My4wNzEsInN1YiI6IjY3Nzc2MjJiNDk2ZGQ5NTJjODcyNDgyNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.5ZpDi0y2kOgyMJWJsEDHbUt63HfHbLF0pyghBGFpWxQ',
           },
         }
       );
@@ -43,7 +42,7 @@ const MovieDetailsPage = () => {
   }, [movieId]);
 
   const handleGoBack = () => {
-    navigate(previousLocationRef.current);
+    navigate(previousLocation);
   };
 
   if (loading) {
@@ -85,7 +84,6 @@ const MovieDetailsPage = () => {
         <NavLink to="reviews">Reviews</NavLink>
       </nav>
 
-      {/* Відображення вкладених маршрутів */}
       <Outlet />
     </div>
   );
